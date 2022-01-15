@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'package:chat_app_01/src/services/services.dart';
 import 'package:chat_app_01/src/widgets/widgets.dart';
+import 'package:chat_app_01/src/helpers/mostrar_alerta.dart';
 
 class LoginPage extends StatelessWidget {
 
@@ -44,6 +47,9 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+
+    final authService = Provider.of<AuthService>(context);
+
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -63,11 +69,24 @@ class __FormState extends State<_Form> {
 
           // TODO: crear boton
          BotonAzul(
-           texto: 'Ingrese',
-           onPressed: () {
-           print(emailCtrl.text);
-           print(passwordCtrl.text);
-           }, )
+           texto: authService.autenticando ? 'Procesando...' : 'Ingrese',
+           onPressed: authService.autenticando ? () {} : () async {
+
+             // oculta el teclado luego oprimir el boton
+             FocusScope.of(context).unfocus();
+
+              final loginOk = await authService.login(emailCtrl.text.trim(), passwordCtrl.text.trim());
+
+              if ( loginOk) {
+                // TODO: conectar al socket server
+                Navigator.pushReplacementNamed(context, 'usuarios');
+              } else {
+                // Mostrar una alerta
+                mostrarAlerta(context, 'Login Incorrecto', 'Credenciales no valida.');
+              }
+           },
+           
+          )
         ],
       ),
     );

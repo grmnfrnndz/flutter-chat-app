@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:chat_app_01/src/models/models.dart';
-
+import 'package:chat_app_01/src/services/services.dart';
 
 class UsuarioPage extends StatefulWidget {
 
@@ -17,20 +18,29 @@ class _UsuarioPageState extends State<UsuarioPage> {
 
 
   final usuarios = [
-    Usuario(uid: '1', nombre: 'María', email: 'maria@gmail.com', onLine: true),
-    Usuario(uid: '2', nombre: 'Germán', email: 'german@gmail.com', onLine: false),
-    Usuario(uid: '3', nombre: 'Andrés', email: 'andres@gmail.com', onLine: true),
+    Usuario(uid: '1', nombre: 'María', email: 'maria@gmail.com', online: true),
+    Usuario(uid: '2', nombre: 'Germán', email: 'german@gmail.com', online: false),
+    Usuario(uid: '3', nombre: 'Andrés', email: 'andres@gmail.com', online: true),
   ];
 
 
   @override
   Widget build(BuildContext context) {
+
+    final authService = Provider.of<AuthService>(context);
+    final usuario = authService.usuario;
+
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('Mi nombre')),
+        title: Center(child: Text('${usuario.nombre}')),
         elevation: 1,
         backgroundColor: Colors.blue,
-        leading: IconButton(onPressed: () {}, icon: Icon(Icons.exit_to_app)),
+        leading: IconButton(onPressed: () {
+          // TODO: desconectar del socket
+          AuthService.deleteToken();
+          Navigator.pushReplacementNamed(context, 'login');
+        }, 
+        icon: Icon(Icons.exit_to_app)),
         actions: [
           Container(
             margin: EdgeInsets.only(right: 10),
@@ -74,7 +84,7 @@ class _UsuarioPageState extends State<UsuarioPage> {
           width: 10,
           height: 10,
           decoration: BoxDecoration(
-            color: (usuario.onLine) ? Colors.green[300] : Colors.red,
+            color: (usuario.online) ? Colors.green[300] : Colors.red,
             borderRadius: BorderRadius.circular(100)
           ),
         ),

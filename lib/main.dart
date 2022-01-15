@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
 
-import 'package:chat_app_01/src/routes/routes.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(MyApp());
+import 'package:chat_app_01/src/routes/routes.dart';
+import 'package:chat_app_01/src/services/services.dart';
+
+void main() => runApp(AppState());
+
+class AppState extends StatelessWidget {
+  const AppState({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(providers: [
+      ChangeNotifierProvider(create: (BuildContext context) => AuthService(),)
+    ],
+    child: MyApp(),
+    );
+  }
+}
+
 
 class MyApp extends StatelessWidget {
   @override
@@ -10,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Material App',
-      initialRoute: 'chat',
+      initialRoute: 'loading',
       routes: appRoutes,
     );
   }
