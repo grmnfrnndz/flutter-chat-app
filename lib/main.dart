@@ -13,7 +13,10 @@ class AppState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
-      ChangeNotifierProvider(create: (BuildContext context) => AuthService(),)
+      ChangeNotifierProvider(create: (BuildContext context) => AuthService()), 
+      ChangeNotifierProvider(create: (BuildContext context) => SocketService()), 
+      ChangeNotifierProvider(create: (BuildContext context) => ChatService()), 
+
     ],
     child: MyApp(),
     );

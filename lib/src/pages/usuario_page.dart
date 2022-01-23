@@ -14,19 +14,28 @@ class UsuarioPage extends StatefulWidget {
 
 class _UsuarioPageState extends State<UsuarioPage> {
 
+  final usuarioService = UsuariosService();
   RefreshController _refreshController = RefreshController(initialRefresh: false);
 
+  List<Usuario> usuarios = [];
 
-  final usuarios = [
-    Usuario(uid: '1', nombre: 'María', email: 'maria@gmail.com', online: true),
-    Usuario(uid: '2', nombre: 'Germán', email: 'german@gmail.com', online: false),
-    Usuario(uid: '3', nombre: 'Andrés', email: 'andres@gmail.com', online: true),
-  ];
+  // final usuarios = [
+  //   Usuario(uid: '1', nombre: 'María', email: 'maria@gmail.com', online: true),
+  //   Usuario(uid: '2', nombre: 'Germán', email: 'german@gmail.com', online: false),
+  //   Usuario(uid: '3', nombre: 'Andrés', email: 'andres@gmail.com', online: true),
+  // ];
+
+  @override
+  void initState() {
+    _cargarUsuarios();
+    super.initState();
+  }  
 
 
   @override
   Widget build(BuildContext context) {
 
+    final socketService = Provider.of<SocketService>(context);
     final authService = Provider.of<AuthService>(context);
     final usuario = authService.usuario;
 
@@ -36,7 +45,7 @@ class _UsuarioPageState extends State<UsuarioPage> {
         elevation: 1,
         backgroundColor: Colors.blue,
         leading: IconButton(onPressed: () {
-          // TODO: desconectar del socket
+          socketService.disconnect();
           AuthService.deleteToken();
           Navigator.pushReplacementNamed(context, 'login');
         }, 
@@ -44,8 +53,8 @@ class _UsuarioPageState extends State<UsuarioPage> {
         actions: [
           Container(
             margin: EdgeInsets.only(right: 10),
-            // child: Icon(Icons.check_circle_outline, color: Colors.blue[400]),
-            child: Icon(Icons.offline_bolt, color: Colors.red)
+            child: (ServerStatus.Online == socketService.serverStatus ) ? Icon(Icons.check_circle_outline, color: Colors.blue[400])
+            : Icon(Icons.offline_bolt, color: Colors.red)
           )
         ],
       ),
@@ -88,16 +97,19 @@ class _UsuarioPageState extends State<UsuarioPage> {
             borderRadius: BorderRadius.circular(100)
           ),
         ),
+        onTap: () {
+          final chatService = Provider.of<ChatService>(context, listen: false);
+          chatService.usuarioPara = usuario;
+          Navigator.pushNamed(context, 'chat');
+        },
       );
   }
 
   _cargarUsuarios() async {
-    await Future.delayed(Duration(milliseconds: 1000));
+    // await Future.delayed(Duration(milliseconds: 1000));
     // if failed,use refreshFailed()
-
-
-
-
+    this.usuarios = await usuarioService.getUsuarios();
+    setState(() {});
     _refreshController.refreshCompleted();
   }
 

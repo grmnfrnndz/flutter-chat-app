@@ -26,11 +26,12 @@ class LoadingPage extends StatelessWidget {
 
 
   Future checkLoginState(BuildContext context) async {
+    final socketService = Provider.of<SocketService>(context, listen: false);
     final authService = Provider.of<AuthService>(context, listen: false);
     final autenticado =  await authService.isLoggedin();
 
     if (autenticado) {
-      // TODO: Conectar al socket
+      socketService.connect();
       // Navigator.pushReplacementNamed(context, 'usuarios');
 
       Navigator.pushReplacement(context, PageRouteBuilder(
@@ -43,7 +44,7 @@ class LoadingPage extends StatelessWidget {
 
     } else {
       // Navigator.pushReplacementNamed(context, 'login');
-
+      
       Navigator.pushReplacement(context, PageRouteBuilder(
         pageBuilder: (_, __, ___) => LoginPage(),
         transitionDuration: Duration(milliseconds: 0)

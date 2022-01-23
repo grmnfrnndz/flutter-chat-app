@@ -51,6 +51,7 @@ class __FormState extends State<_Form> {
   Widget build(BuildContext context) {
 
     final authService = Provider.of<AuthService>(context, listen: false);
+    final socketService = Provider.of<SocketService>(context, listen: false);
 
     return Container(
       margin: EdgeInsets.only(top: 40),
@@ -76,7 +77,6 @@ class __FormState extends State<_Form> {
             isPassword: true,
           ),
 
-          // TODO: crear boton
          BotonAzul(
            texto: authService.registrando ? 'Procesando...' :'Registrar',
            onPressed: authService.registrando ? () {} : () async {
@@ -87,7 +87,7 @@ class __FormState extends State<_Form> {
               final registerOk = await authService.register(emailCtrl.text.trim(), passwordCtrl.text.trim(), nombreCtrl.text.trim());
 
               if ( registerOk  == true) {
-                // TODO: conectar al socket server
+                socketService.connect();
                 
                 mostrarAlerta(context, 'Registro Completado', 'Registro creado correctamente.');
                 Navigator.pushReplacementNamed(context, 'usuarios');
